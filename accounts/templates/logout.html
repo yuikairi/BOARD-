@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block title %}Log out{% endblock %}
+{% block main %}
+<div class="contener">
+<div class="row">
+<div class="col offset-4 py-4">
+<h3>ログアウトしました</h3>
+<p><a href="{% url 'boards:index' %}">HOME</a></p>
+{% endblock %}

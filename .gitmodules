@@ -1,0 +1,3 @@
+[submodule "config/my-first-blog"]
+	path = config/my-first-blog
+	url = https://github.com/yuikairi/my-first-blog.git
