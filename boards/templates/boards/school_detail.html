@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}<title>学校詳細</title>{% endblock %}
+
+{% block main %}
+<div class="container">
+        <!-- 行を配置 -->
+        <div class="row">
+          <!-- 列の左右に余白offset-3を入れる -->
+          <div class="col offset-3">
+        <h4>&#9733;学校詳細&#9733;</h4>
+        <br>
+        <p>学校名: {{ school.school_name }}</p>
+        <p>都道府県: {{ school.prefecture.prefecture_name }}</p>
+        {% for post in posts %}
+        <p>評価: 
+            {% if post.score.value == 1 %}
+                ★
+            {% elif post.score.value == 2 %}
+                ★★
+            {% elif post.score.value == 3 %}
+                ★★★
+            {% elif post.score.value == 4 %}
+                ★★★★
+            {% elif post.score.value == 5 %}
+                ★★★★★
+            {% endif %}
+        </p>
+        <p>投稿者: {{ request.user.username }}</p>
+        <p>{{ post.content|truncatewords:50 }}</p>
+    {% endfor %}
+    <p>偏差値:
+        {% if school.deviation_values.all %}
+            {% for deviation_value in school.deviation_values.all %}
+                {{ deviation_value.get_value_display }}
+                {% if not forloop.last %}, {% endif %}
+            {% endfor %}
+        {% else %}
+            情報がありません
+        {% endif %}
+    </p>
+    <hr>
+    <!-- 新規投稿フォームをここに追加 -->
+        <form action="{% url 'boards:post' school_id=school.id city_id=school.city.id|default:0 %}" method="post">
+
+    {% csrf_token %}
+    <!-- 他のフォームフィールドを追加 -->
+    <p>{{ school.city.city_name }}</p> 
+    <!-- 他のフォームフィールドを追加 -->
+    <input type="submit" value="新規投稿する"><p>
+</form>
+    {% if posts %}
+    <h4>この学校の他の投稿一覧</h4>
+    <br>
+    <ul>
+        {% for post in posts %}
+        <li>{{ post.title }}</li>
+        <p>{{ post.content }}</p>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p>該当する投稿はありません。</p>
+    {% endif %}
+    <a href="{% url 'boards:school_list' %}">学校一覧に戻る</a>
+</div>
+</div>
+</div>
+</div>
+{% endblock %}
