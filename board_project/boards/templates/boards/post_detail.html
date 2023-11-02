@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block main %}
+
+<div class="container">
+      
+        <div class="row">
+         
+          <div class="col offset-3">  
+<h4><b>学校名: {{ post.school.school_name }}</b></h4>
+<br>
+    <h5>{{ post.title }}</h5>
+    <p>{{ post.content }}</p>
+<p>投稿者:{{ request.user.username }}</p>
+
+    <hr>
+    <h2>スレッド</h2>
+    {% if threads %}
+        <ul>
+            {% for thread in threads %}
+                <li>
+                    {{ thread.content }}
+                    <a href="{% url 'boards:post_detail' post.id %}"></a>
+                    <br>
+                    <small>Posted by {{ thread.users.usersname }} on {{ thread.created_at|date:"Y-m-d" }}</small>
+                    <hr>
+                </li>
+
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>この投稿にはスレッドがありません。</p>
+    {% endif %}
+    
+    <!-- 新しいスレッドを追加するフォーム -->
+    <h3>新しいスレッドを追加</h3>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">送信</button>
+    </form>
+</div>
+</div>
+</div>
+</div>
+{% endblock %}
