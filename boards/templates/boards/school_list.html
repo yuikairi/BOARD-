@@ -1,14 +1,18 @@
 {% extends "base.html" %}
 {% block title %}<title>学校一覧</title>{% endblock %}
 {% block main %}
+<div class="container">
+        <!-- 行を配置 -->
+        <div class="row">
+          <!-- 列の左右に余白offset-3を入れる -->
+          <div class="col offset-3">
 <div style="text-align:center; height:6rem;">
     <h2>学校一覧</h2>
 </div>
 {% if schools %}
-<style>
-    table {
+table {
         border-collapse: collapse;
-        width: 70%;
+        width: 100%; /* モバイルデバイスではテーブルを画面幅いっぱいに展開 */
         background-color: #fff;
         margin: auto;
     }
@@ -16,7 +20,17 @@
         border: 1px solid #ddd;
         text-align: center;
         padding: 8px;
-        white-space: nowrap;
+        /* white-space: nowrap; モバイル表示では折り返しが必要になることが多い */
+    }
+
+    /* デスクトップや大きなディスプレイに適用するスタイル */
+    @media (min-width: 768px) {
+        table {
+            width: 70%; /* 画面が広い場合はテーブルの幅を70%に制限 */
+        }
+        th, td {
+            white-space: nowrap; /* 画面が広い場合はテキストを折り返さない */
+        }
     }
 </style>
 <table border="1">
@@ -52,4 +66,7 @@
 {% endif %}
 <br>
 <a href="{% url 'boards:post_list' %}">投稿一覧に戻る</a>
+<div>
+</div>
+</div>
 {% endblock %}
