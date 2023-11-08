@@ -262,7 +262,7 @@ def ranking_view(request):
         top_ranked_posts = Post.objects.all().order_by('-total_rating')[:10]
         return render(request, 'boards/ranking.html', {'top_ranked_posts': top_ranked_posts})
 
-
+    
     
 class PostSuccessView(TemplateView):
     template_name ='boards/post_success.html'

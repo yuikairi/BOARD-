@@ -1,6 +1,6 @@
 from django.urls import path
 from . import views
-from .views import CreatePostView,PostDeleteView
+from .views import CreatePostView,PostDeleteView,ranking_view
 
 app_name = 'boards'
 urlpatterns = [
