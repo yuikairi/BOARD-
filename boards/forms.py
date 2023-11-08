@@ -4,6 +4,8 @@ from django.db import models
 from .models import School, Prefecture, City, Deviation_Value, Score, Post
 from accounts.models import CustomUser
 
+
+
 class SearchForm(forms.Form):
     prefecture = forms.ChoiceField(choices=PREFECTURE_CHOICES, label='エリア')
     min_deviation = forms.IntegerField(label='最小偏差値', required=False)
@@ -15,6 +17,12 @@ class ThreadForm(forms.ModelForm):
     class Meta:
         model = Thread
         fields = ['title','content', 'score' ]
+        
+    def __init__(self, *args, **kwargs):
+        super(ThreadForm, self).__init__(*args, **kwargs)
+        score_choices = Score.objects.all().order_by('value')
+        self.fields['score'].choices = [(score.id, '★' * score.value) for score in score_choices]
+    
     def __str__(self):
         return self.TimestampedModel
     
@@ -26,7 +34,9 @@ class PostForm(forms.ModelForm):
     city = forms.ModelChoiceField(queryset=City.objects.all(), required=False, empty_label=None)
     deviation_value = forms.ModelChoiceField(queryset=Deviation_Value.objects.all(), required=False, empty_label=None)
     prefecture = forms.ModelChoiceField(queryset=Prefecture.objects.all(), required=False, empty_label=None)
-    
+
+
+
     def save(self, commit=True):
         instance = super().save(commit=False)
         if commit:
@@ -37,8 +47,10 @@ class PostForm(forms.ModelForm):
         school_id = kwargs.pop('school_id', None)
         city_id = kwargs.pop('city_id', None)
 
-        super().__init__(*args, **kwargs)
-
+        super(PostForm, self).__init__(*args, **kwargs)
+        score_choices = [(score.id, '★' * score.value) for score in Score.objects.all().order_by('value')]
+        self.fields['score'].choices = score_choices
+        
         if school_id is not None:
             self.fields['school_id'].initial = school_id
         if city_id is not None:

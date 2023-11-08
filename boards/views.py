@@ -258,17 +258,10 @@ def school_detail(request, school_id):
     }
     return render(request, 'boards/school_detail.html', context)
 
-
-
-
-
-def ranking(request):
-    # スコアが高い順にPostモデルを取得
-    top_ranked_posts = Post.objects.all().order_by('-score')
-    
-    def ranking_view(request):
+def ranking_view(request):
         top_ranked_posts = Post.objects.all().order_by('-total_rating')[:10]
-    return render(request, 'boards/ranking.html', {'top_ranked_posts': top_ranked_posts})
+        return render(request, 'boards/ranking.html', {'top_ranked_posts': top_ranked_posts})
+
 
     
 class PostSuccessView(TemplateView):
@@ -305,3 +298,5 @@ def edit_post(request, post_id):
         form = PostForm(instance=post)
     
     return render(request, 'boards/edit_post.html', {'form': form, 'post': post})
+
+
