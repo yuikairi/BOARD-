@@ -1,0 +1,21 @@
+<!--{% extends "base.html" %}
+
+{% block content %}
+<h2>City Schools Count</h2>
+<table>
+  <thead>
+    <tr>
+      <th>City</th>
+      <th>Number of Schools</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for city in cities %}
+    <tr>
+      <td>{{ city.city_name }}</td>
+      <td>{{ city.schools_count }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

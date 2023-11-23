@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}プロフィール{% endblock %}
+{% block main %}
+<div class="container">
+        <div class="row">
+          <div class="col py-4">
+          <h1>プロフィール</h1>
+          <p>ユーザー名: {{ request.user.username }}</p>
+            <p>メールアドレス: {{ request.user.email }}</p>
+          <a href="{% url 'accounts:edit_profile' %}" class="btn btn-primary">プロフィールを編集</a><br>
+        <br>
+      <a href="{% url 'boards:index' %}">TOPへ戻る</a>
+    </div>
+  </diV>
+ </div> 
+{% endblock %}
