@@ -3,16 +3,9 @@ from django.urls import path,include
 from django.contrib.auth import views as auth_views
 from django.conf import settings
 from django.conf.urls.static import static
-<<<<<<< HEAD
-from django.views.generic.base import RedirectView
-
-urlpatterns = [
-    path('', RedirectView.as_view(url='/boards/'), name='index_redirect'),
-=======
 
 
 urlpatterns = [
->>>>>>> 7121590d2f44f53137001a0f8830fcf6c350dc0d
     path('admin/', admin.site.urls),
     path('accounts/',include('accounts.urls')),
     path('boards/',include('boards.urls')),
@@ -27,6 +20,7 @@ urlpatterns = [
          auth_views.PasswordResetCompleteView.as_view(
            template_name = "password_reset_done.html"),
          name ='password_reset_complete'),
+        
 ]
 
 if settings.DEBUG:

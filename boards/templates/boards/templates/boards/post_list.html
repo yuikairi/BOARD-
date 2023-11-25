@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% block title %}投稿一覧{% endblock %}
+{% block main %} 
+
+<div class="container">
+    <div class="row">
+        <div class="col offset-3">  
+
+            {% if user.is_authenticated %}
+                <h3>&#9733;投稿一覧&#9733;</h3><br>
+                <ul>
+                    {% for post in posts %}
+                        <h4>学校名: {{ post.school.school_name }}</h4><br>
+                        <li>
+                            {% if post.id %}
+                                <a href="{% url 'boards:post_list' %}"></a> 
+                                <a href="{% url 'boards:post_detail' post.id %}">
+                                    <h5>{{ post.title }}</h5>
+                                </a><br>
+                                <p>投稿者: {{ post.user.username }}</p> 
+                                <p>都道府県: {{ post.prefecture.prefecture_name }}</p>
+                                <p>偏差値: {{ post.deviation_value }}</p>
+                                <p>市: {{ post.city.city_name }}</p>
+                                <p>評価: 
+                                    {% if post.score.value == 1 %}
+                                    ★
+                                {% elif post.score.value == 2 %}
+                                    ★★
+                                {% elif post.score.value == 3 %}
+                                    ★★★
+                                {% elif post.score.value == 4 %}
+                                    ★★★★
+                                {% elif post.score.value == 5 %}
+                                    ★★★★★
+                                {% endif %}
+                                </p>
+                                <p>{{ post.content|truncatewords:50 }}</p><br>
+                                <p>{{ post.created_at }}{{ form.post_created_at.errors }}</p>
+                                {% if post.user == user %} 
+                                    <form method="POST" action="{% url 'boards:post_delete' post.pk %}">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-primary my-2">削除する</button>
+                                         </form>
+                                        {% if user.is_authenticated and user == post.user %}
+                                            <a href="{% url 'boards:edit_post' post.id %}" class="btn btn-primary my-2">編集する</a>
+                                        {% endif %}
+                                    </form>
+                                    <hr>
+                                {% endif %}
+                            {% endif %}
+                        </li>
+                    {% endfor %}
+                </ul>
+                {% if not posts %}
+                    <p>投稿はありません。</p>
+                {% endif %}
+            {% endif %}
+
+        </div>
+    </div>
+</div>
+{% endblock %}
