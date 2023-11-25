@@ -18,8 +18,12 @@
                     {{ thread.content }}
                     <a href="{% url 'boards:post_detail' post.id %}"></a>
                     <br>
+<<<<<<< HEAD
                     <small>Posted by {{ thread.user.username }} on {{ thread.created_at|date:"Y-m-d" }}</small>
 small>
+=======
+                    <small>Posted by {{ thread.user.usersname }} on {{ thread.created_at|date:"Y-m-d" }}</small>
+>>>>>>> origin/main
                     <hr>
                 </li>
 

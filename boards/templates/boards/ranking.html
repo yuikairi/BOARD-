@@ -1,13 +1,24 @@
+<<<<<<< HEAD
 {% block head %}
+=======
+{% block title %}レビューランキング{% endblock %}
+{% block main %}
+>>>>>>> origin/main
 <div class="container">
     <div class="row">
         <div class="col py-4">
             <h1>レビューランキング</h1>
             <p>投稿の中から「★」が高い順の高校を閲覧できます</p>
             <ul>
+<<<<<<< HEAD
               {% for post in posts %}
                 <li>
                    <a href="{% url 'boards:post_detail' post.id %}">{{ post.title }}</a>
+=======
+                {% for post in top_ranked_posts %}
+                    <li>
+                        <a href="{% url 'boards:post_detail' post.id %}">{{ post.title }}</a>
+>>>>>>> origin/main
                         - 評価: {% if post.score.value == 1 %}
                             ★
                         {% elif post.score.value == 2 %}
@@ -24,6 +35,7 @@
                     <p>ランキング情報がありません。</p>
                 {% endfor %}
             </ul>
+<<<<<<< HEAD
             <hr>
             <form method="post" action="{% url 'boards:new_post' %}">
   {% csrf_token %}
@@ -37,4 +49,9 @@
             
         </div>
     </div>
+=======
+        </div>
+    </div>
+</div>
+>>>>>>> origin/main
 {% endblock %}
