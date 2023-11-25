@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}新規投稿{% endblock %}
+{% block main %}
+<div class="container">
+      
+        <div class="row">
+         
+          <div class="col offset-3">  
+     <h3>新しい投稿を作成</h3>
+
+       <form action="{% url 'boards:post' school_id=view.kwargs.school_id city_id=view.kwargs.city_id %}" method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <input type="submit" value="投稿する"><p>
+                <br>
+                <a href="{% url 'boards:post_list' %}">投稿一覧に戻る</a>
+            </form>
+</div>
+</div>
+</div>
+<<<<<<< HEAD
+</div>
+=======
+>>>>>>> origin/main
+{% endblock %}

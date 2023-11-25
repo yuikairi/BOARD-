@@ -2,10 +2,10 @@ from django.apps import AppConfig
 
 class BoardsConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'my_board.boards'
+    name = 'boards'
 
     def ready(self):
-        # ここでカスタムコマンドを登録
+        # ここでカスタムコマンドを登録します
         try:
             import boards.commands
         except ImportError:

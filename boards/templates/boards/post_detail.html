@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}投稿詳細{% endblock %}
+{% block main %}
+<div class="container">    
+        <div class="row">      
+          <div class="col offset-3">  
+<h4><b>学校名: {{ post.school.school_name }}</b></h4>
+<br>
+    <h5>{{ post.title }}</h5>
+    <p>{{ post.content }}</p>
+<p>投稿者:{{ post.user.username }}</p>
+    <hr>
+    <h2>スレッド</h2>
+    {% if threads %}
+        <ul>
+            {% for thread in threads %}
+                <li>
+                    {{ thread.content }}
+                    <a href="{% url 'boards:post_detail' post.id %}"></a>
+                    <br>
+<<<<<<< HEAD
+                    <small>Posted by {{ thread.user.username }} on {{ thread.created_at|date:"Y-m-d" }}</small>
+small>
+=======
+                    <small>Posted by {{ thread.user.usersname }} on {{ thread.created_at|date:"Y-m-d" }}</small>
+>>>>>>> origin/main
+                    <hr>
+                </li>
+
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>この投稿にはスレッドがありません。</p>
+    {% endif %}
+    
+    <!-- 新しいスレッドを追加するフォーム -->
+    <h3>新しいスレッドを追加</h3>
+    <form method="post">
+        {% csrf_token %}
+         <p>
+          <label for="id_title">タイトル:</label>
+          {{ form.title }}
+        </p>
+        <p>
+          <label for="id_content">内容:</label>
+          {{ form.content }}
+        </p>
+        <p>
+          <label for="id_score">評価:</label>
+          <select name="score" id="id_score">
+            {% for value, star_str in form.fields.score.choices %}
+            <option value="{{ value }}" {% if form.instance.score == value %} selected {% endif %}>
+              {{ star_str }}
+            </option>
+            {% endfor %}
+          </select>
+        </p>
+        <button type="submit">送信</button>
+    </form>
+</div>
+</div>
+</div>
+</div>
+{% endblock %}

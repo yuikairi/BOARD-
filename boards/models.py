@@ -8,6 +8,8 @@ from django.contrib.auth import get_user_model
 from django.conf import settings
 from .rating import Rating 
 
+
+
 class TimestampedModel(models.Model):
     #抽象ベースクラス。すべてのモデルで共通の created_at と updated_at フィールドを持たせる。
     created_at = models.DateTimeField(auto_now_add=True)
@@ -22,6 +24,7 @@ class SchoolSearchQuerySet(models.QuerySet):
 
     def filter_by_deviation_value(self, deviation_value):
         return self.filter(deviation_values=deviation_value)
+    
 
 def search_school(request):
     prefecture = request.GET.get('prefecture')
@@ -165,12 +168,17 @@ class SchoolSearchQuerySet(models.QuerySet):
 
     def filter_by_deviation_value(self, deviation_value):
         return self.filter(deviation_values=deviation_value)
+    
+    def filter_by_city(self, city):
+        return self.filter(city=city)
 
 def search_school(request):
     prefecture = request.GET.get('prefecture')
     deviation_value = request.GET.get('deviation_value')
+    city = request.GET.get('city')
     print(f'prefecture: {prefecture}')
     print(f'deviation_value: {deviation_value}')
+    print(f'city: {city}')
     
     # カスタムクエリセット
     schools = School.objects.all()
@@ -179,6 +187,8 @@ def search_school(request):
         schools = schools.filter_by_prefecture(prefecture)
     if deviation_value:
         schools = schools.filter_by_deviation_value(deviation_value)
+    if city:
+        schools = schools.filter_by_city(city)    
 
 
     if prefecture == "愛知" and deviation_value == "1":

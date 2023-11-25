@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block title %}学校検索{% endblock %}
+{% block main %}
+<div class="container">
+        <!-- 行を配置 -->
+        <div class="row">
+          <!-- 列の左右に余白offset-3を入れる -->
+          <div class="col offset-3">
+    <h3>学校検索</h3>
+   <br>
+<<<<<<< HEAD
+     <form method="get" action="{% url 'boards:school_list' %}">
+       <label for="prefecture">都道府県:</label>
+=======
+    <form method="get" action="{% url 'boards:school_list' %}">
+        <label for="prefecture">都道府県:</label>
+>>>>>>> origin/main
+        <select id="prefecture" name="prefecture">
+            <option value="愛知">愛知</option>
+            <option value="岐阜">岐阜</option>
+            <option value="三重">三重</option>
+        </select>
+<<<<<<< HEAD
+
+        <!-- 市の選択肢を表示するための要素 -->
+        <div id="city-dropdown">
+            <label for="city">市区町村:</label>
+            <select id="city" name="city">
+                <option value="">選択してください</option>
+            </select>
+        </div>
+=======
+>>>>>>> origin/main
+        
+        <label for="deviation_value">偏差値:</label>
+        <select id="deviation_value" name="deviation_value">
+            <option value="1">35~45</option>
+            <option value="2">46~55</option>
+            <option value="3">56~65</option>
+            <option value="4">66以上</option>
+        </select>
+        <button type="submit">検索</button>
+    </form>
+<<<<<<< HEAD
+</div>
+  </div>
+  </div>
+  </div>
+ <script>
+    // 都道府県が変更されたときに市の選択肢を読み込む
+    document.getElementById('prefecture').addEventListener('change', function() {
+        var selectedPrefecture = this.value;
+        var cityDropdown = document.getElementById('city');
+        var cityDropdownContainer = document.getElementById('city-dropdown');
+        
+        // 選択された都道府県に関連する市のリストを取得
+        fetch(`/boards/get_cities/?prefecture_name=${selectedPrefecture}`)
+            .then(response => response.json())
+            .then(data => {
+                // 市の選択肢をクリア
+                cityDropdown.innerHTML = '<option value="">選択してください</option>';
+                // 選択された都道府県に関連する市を追加
+                data.cities.forEach(city => {
+                    var option = document.createElement('option');
+                    option.value = city.id;
+                    option.text = city.city_name;
+                    cityDropdown.appendChild(option);
+                });
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    });
+</script>
+=======
+  </div>
+  </div>
+  </div>
+   
+>>>>>>> origin/main
+{% endblock %}
