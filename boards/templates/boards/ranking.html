@@ -1,0 +1,40 @@
+{% block head %}
+<div class="container">
+    <div class="row">
+        <div class="col py-4">
+            <h1>レビューランキング</h1>
+            <p>投稿の中から「★」が高い順の高校を閲覧できます</p>
+            <ul>
+              {% for post in posts %}
+                <li>
+                   <a href="{% url 'boards:post_detail' post.id %}">{{ post.title }}</a>
+                        - 評価: {% if post.score.value == 1 %}
+                            ★
+                        {% elif post.score.value == 2 %}
+                            ★★
+                        {% elif post.score.value == 3 %}
+                            ★★★
+                        {% elif post.score.value == 4 %}
+                            ★★★★
+                        {% elif post.score.value == 5 %}
+                            ★★★★★
+                        {% endif %}
+                    </li>
+                {% empty %}
+                    <p>ランキング情報がありません。</p>
+                {% endfor %}
+            </ul>
+            <hr>
+            <form method="post" action="{% url 'boards:new_post' %}">
+  {% csrf_token %}
+  <input type="hidden" name="school_id" value="{{ school_id }}">
+  <input type="hidden" name="city_id" value="{{ city_id }}">
+
+  <button type="submit" class="btn btn-primary">投稿する</button><br>
+            <br>
+            
+             {% include 'boards/pagination.html' %}
+            
+        </div>
+    </div>
+{% endblock %}
