@@ -3,6 +3,7 @@ from django.urls import path,include
 from django.contrib.auth import views as auth_views
 from django.conf import settings
 from django.conf.urls.static import static
+from boards import views as board_views
 
 
 urlpatterns = [
@@ -20,7 +21,8 @@ urlpatterns = [
          auth_views.PasswordResetCompleteView.as_view(
            template_name = "password_reset_done.html"),
          name ='password_reset_complete'),
-        
+    path('', board_views.IndexView.as_view(), name='home'),
+
 ]
 
 if settings.DEBUG:

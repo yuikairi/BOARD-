@@ -13,10 +13,9 @@ STATIC_DIR = os.path.join(BASE_DIR, 'static')
 
 
 
-DEBUG = False
-ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+DEBUG = True
+ALLOWED_HOSTS = ['*']
 
-#ALLOWED_HOSTS = ['yuikairi.pythonanywhere.com']
 
 CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SECURE = True
@@ -34,7 +33,6 @@ INSTALLED_APPS = [
     'accounts',
     'boards',
     'django_extensions',
-    'scripts',
 ]
 
 MIDDLEWARE = [
@@ -73,11 +71,14 @@ WSGI_APPLICATION = 'board_project.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'HOST': 'yuikairi.mysql.pythonanywhere-services.com',
+        'NAME': 'yuikairi$default',
+        'USER': 'yuikairi',
+        'PASSWORD': '19870802hy',
+        'PORT': '3306',
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
