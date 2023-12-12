@@ -9,4 +9,35 @@
         <button type="submit" class="btn btn-primary">投稿する</button>
     </form>
 </div>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var prefectureDropdown = document.getElementById('id_prefecture');
+        var cityDropdown = document.getElementById('id_city');
+
+        prefectureDropdown.addEventListener('change', function () {
+            var selectedPrefectureId = this.value;
+            updateCityChoices(selectedPrefectureId);
+        });
+    });
+
+    function updateCityChoices(prefectureId) {
+        var citiesDropdown = document.getElementById('id_city');
+        citiesDropdown.innerHTML = '';
+
+        if (prefectureId) {
+            var url = `/boards/get_cities/?prefecture_id=${prefectureId}`;
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    data.cities.forEach(city => {
+                        var option = document.createElement('option');
+                        option.value = city.id;
+                        option.textContent = city.city_name;
+                        citiesDropdown.appendChild(option);
+                    });
+                })
+                .catch(error => console.error('Error:', error));
+        }
+    }
+</script>
 {% endblock %}

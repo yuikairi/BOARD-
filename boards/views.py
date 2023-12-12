@@ -54,6 +54,8 @@ def post_detail(request, post_id):
 
 def search_school(request):
     form = SearchForm(request.GET or None)
+    #
+    initial_cities = []
     if form.is_valid():
         # form.cleaned_dataからフィルタリングのためのデータを取得
         prefecture_name = form.cleaned_data.get('prefecture')
@@ -75,8 +77,12 @@ def search_school(request):
         context = {'schools': schools, 'form': form}
         return render(request, 'boards/school_list.html', context)
     else:
+        initial_prefecture = '愛知'
+        # 初期都道府県に基づいて市のリストを取得
+        initial_cities = City.objects.filter(prefecture__prefecture_name=initial_prefecture).values('id', 'city_name')
+
         # フォームが無効の場合やGETリクエストがない場合は空のフォームを使用
-        context = {'form': form}
+        context = {'form': form,'initial_cities': list(initial_cities)}
         return render(request, 'boards/search_school.html', context)
 
 def school_list(request):
@@ -86,6 +92,7 @@ def school_list(request):
     city = request.GET.get('city')
     min_deviation = request.GET.get('min_deviation')
     max_deviation = request.GET.get('max_deviation')
+    form = SchoolFilterForm(request.GET or None)
     
     if deviation_value is not None:
         try:
@@ -133,12 +140,16 @@ def school_list(request):
         min_deviation = form.cleaned_data['min_deviation']
         max_deviation = form.cleaned_data['max_deviation']
         filtered_schools = School.objects.filter(prefecture__prefecture_name=prefecture)
-        
+         # 初期表示で愛知県が選択されているかどうかを確認
+        initial_prefecture = '愛知'
+        initial_cities = City.objects.filter(prefecture__prefecture_name=initial_prefecture).values('id', 'city_name')    
+          
         if min_deviation is not None:
             filtered_schools = filtered_schools.filter(deviation__gte=min_deviation)
         if max_deviation is not None:
             filtered_schools = filtered_schools.filter(deviation__lte=max_deviation)
-        context = {'schools': filtered_schools, 'form': form, 'schools': schools,}
+        context = {'schools': filtered_schools, 'form': form, 'schools': schools, 'initial_cities': list(initial_cities),
+        'initial_prefecture': initial_prefecture,}
         return render(request, 'boards/school_list.html', context)
     else:
         form = SearchForm()
@@ -168,7 +179,7 @@ class CreatePostView(CreateView):
     model = Post
     form_class = PostForm
     template_name = "boards/post_create.html"
-
+    
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
         kwargs['school_id'] = self.kwargs['school_id']
@@ -319,16 +330,20 @@ class PostDeleteView(DeleteView):
 #投稿編集
 def edit_post(request, post_id):
     post = get_object_or_404(Post, id=post_id)
-    
+
     if request.method == 'POST':
-        form = PostForm(request.POST, instance=post)
+        # フォームデータを取得
+        form = PostForm(request.POST, instance=post)  # school_id 引数は削除する
+
         if form.is_valid():
             form.save()
-            return redirect('boards:post_detail', post_id=post.id) 
+
+            messages.success(request, '投稿が更新されました。')
+            return redirect('boards:post_detail', post_id=post.id)
     else:
-        form = PostForm(instance=post)
-    
-    return render(request, 'boards/edit_post.html', {'form': form, 'post': post})
+        form = PostForm(instance=post)  # school_id 引数は削除する
+
+    return render(request, 'boards/edit_post.html', {'post': post, 'form': form})
 
 
 
@@ -376,6 +391,10 @@ def new_post(request, school_id=None, city_id=None):
             post = form.save(commit=False)
             post.user = request.user
 
+            # 市の可変性をチェック
+            if post.school and post.city:
+                post.save()
+                
             # form.cleaned_data から値を取得
             school_id = form.cleaned_data.get('school')
             city_id = form.cleaned_data.get('city')
@@ -394,3 +413,14 @@ def new_post(request, school_id=None, city_id=None):
         form = PostForm(initial={'school': school_id, 'city': city_id})
 
     return render(request, 'boards/new_post.html', {'form': form})
+
+
+    
+def get_cities(request):
+    prefecture_id = request.GET.get('prefecture_id')
+    if prefecture_id:
+        cities = City.objects.filter(prefecture_id=prefecture_id).values('id', 'city_name')
+
+        return JsonResponse({'cities': list(cities)})
+    else:
+        return JsonResponse({'error': 'No prefecture id provided'}, status=400)
