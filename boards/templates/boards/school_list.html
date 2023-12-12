@@ -91,30 +91,40 @@
 <br>
 <a href="{% url 'boards:search_school' %}">学校検索画面に戻る</a>
 <script>
-    // 都道府県が変更されたときに市の選択肢を読み込む
-    document.getElementById('prefecture').addEventListener('change', function() {
-        var selectedPrefecture = this.value;
-        var cityDropdown = document.getElementById('city');
-        var cityDropdownContainer = document.getElementById('city-dropdown');
-        
-        // 選択された都道府県に関連する市のリストを取得
-        fetch(`/boards/get_cities/?prefecture_name=${selectedPrefecture}`)
-            .then(response => response.json())
-            .then(data => {
-                // 市の選択肢をクリア
-                cityDropdown.innerHTML = '<option value="">選択してください</option>';
-                // 選択された都道府県に関連する市を追加
-                data.cities.forEach(city => {
-                    var option = document.createElement('option');
-                    option.value = city.id;
-                    option.text = city.city_name;
-                    cityDropdown.appendChild(option);
-                });
-            })
-            .catch(error => {
-                console.error('Error:', error);
+   // 都道府県が変更されたときに市の選択肢を読み込む
+document.getElementById('prefecture').addEventListener('change', function() {
+    loadCities(this.value);
+});
+
+// ページ読み込み時に特定の都道府県の市をロードする
+window.onload = function() {
+    // 愛知県がデフォルトで選択されていると仮定
+    var initialPrefecture = '愛知';
+    document.getElementById('prefecture').value = initialPrefecture; // この行がデフォルトの選択を設定
+    loadCities(initialPrefecture);
+};
+
+// 都道府県に基づいて市の選択肢を読み込む関数
+function loadCities(prefectureName) {
+    var cityDropdown = document.getElementById('city');
+    // 選択された都道府県に関連する市のリストを取得
+    fetch(`/boards/get_cities/?prefecture_name=${prefectureName}`)
+        .then(response => response.json())
+        .then(data => {
+            // 市の選択肢をクリア
+            cityDropdown.innerHTML = '<option value="">選択してください</option>';
+            // 選択された都道府県に関連する市を追加
+            data.cities.forEach(function(city) {
+                var option = document.createElement('option');
+                option.value = city.id;
+                option.text = city.city_name;
+                cityDropdown.appendChild(option);
             });
-    });
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+}
 </script>
 {% endblock %}
 

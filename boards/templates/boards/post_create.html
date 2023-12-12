@@ -2,21 +2,52 @@
 {% block title %}新規投稿{% endblock %}
 {% block main %}
 <div class="container">
-      
-        <div class="row">
-         
-          <div class="col offset-3">  
-     <h3>新しい投稿を作成</h3>
-
-       <form action="{% url 'boards:post' school_id=view.kwargs.school_id city_id=view.kwargs.city_id %}" method="post">
+    <div class="row">
+        <div class="col offset-3">  
+            <h3>新しい投稿を作成</h3>
+            <form action="{% url 'boards:post' school_id=view.kwargs.school_id city_id=view.kwargs.city_id %}" method="post">
                 {% csrf_token %}
                 {{ form.as_p }}
-                <input type="submit" value="投稿する"><p>
+                <input type="submit" value="投稿する">
                 <br>
                 <a href="{% url 'boards:post_list' %}">投稿一覧に戻る</a>
             </form>
+        </div>
+    </div>
 </div>
-</div>
-</div>
-</div>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var prefecturesDropdown = document.getElementById('id_prefecture');
+    var citiesDropdown = document.getElementById('id_city');
+    if (prefecturesDropdown && citiesDropdown) {
+      prefecturesDropdown.addEventListener('change', function() {
+        updateCityChoices(this.value);
+      });
+    }
+  });
+
+function updateCityChoices(prefectureId) {
+  // 市のドロップダウンをクリア
+  var citiesDropdown = document.getElementById('id_city');
+  citiesDropdown.innerHTML = '';
+
+  // 都道府県が選択されている場合のみリクエストを実行
+  if (prefectureId) {
+    // DjangoのURL設定に合わせてURLを修正
+    var url = `/boards/get_cities/?prefecture_id=${prefectureId}`;
+    fetch(url)
+      .then(response => response.json())
+      .then(data => {
+        // レスポンスに含まれる各市に対してオプションを作成し、ドロップダウンに追加
+        data.cities.forEach(city => {
+          var option = document.createElement('option');
+          option.value = city.id;
+          option.textContent = city.city_name; // city_name を使用
+          citiesDropdown.appendChild(option);
+        });
+      })
+      .catch(error => console.error('Error:', error));
+  }
+}
+</script>
 {% endblock %}
