@@ -415,12 +415,14 @@ def new_post(request, school_id=None, city_id=None):
     return render(request, 'boards/new_post.html', {'form': form})
 
 
-
+#school_list&seach_school&new_post 市の可変
 def fetch_cities_by_prefecture(request):
     prefecture_id = request.GET.get('prefecture_id')
+    print(f'Prefecture ID: {prefecture_id}')
     if prefecture_id:
         cities = City.objects.filter(prefecture_id=prefecture_id).values('id', 'city_name')
 
         return JsonResponse({'cities': list(cities)})
     else:
         return JsonResponse({'error': 'No prefecture id provided'}, status=400)
+

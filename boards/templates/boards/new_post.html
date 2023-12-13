@@ -10,35 +10,41 @@
     </form>
 </div>
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-    var prefectureDropdown = document.getElementById('id_prefecture');
-    var cityDropdown = document.getElementById('id_city');
+    document.addEventListener('DOMContentLoaded', function () {
+        var prefectureDropdown = document.getElementById('id_prefecture'); // 都道府県ドロップダウンのID
+        var cityDropdown = document.getElementById('id_city'); // 市ドロップダウンのID
+
+        // 都道府県ドロップダウンの変更イベントを設定
+        prefectureDropdown.addEventListener('change', function () {
+            updateCityChoices(this.value);
+        });
+
+        // ページ読み込み時に現在選択されている都道府県に基づいて市のリストを更新
+        updateCityChoices(prefectureDropdown.value);
+    });
 
     function updateCityChoices(prefectureId) {
         var citiesDropdown = document.getElementById('id_city');
-        citiesDropdown.innerHTML = '';
+        citiesDropdown.innerHTML = ''; // 市のドロップダウンをクリア
 
         if (prefectureId) {
-            var url = `/boards/get_cities/?prefecture_id=${prefectureId}`;
+            var url = `/boards/fetch_cities_by_prefecture/?prefecture_id=${prefectureId}`;
             fetch(url)
                 .then(response => response.json())
                 .then(data => {
-                    data.cities.forEach(city => {
-                        var option = document.createElement('option');
-                        option.value = city.id;
-                        option.textContent = city.city_name;
-                        citiesDropdown.appendChild(option);
-                    });
+                    if (data.cities) {
+                        data.cities.forEach(city => {
+                            var option = document.createElement('option');
+                            option.value = city.id;
+                            option.textContent = city.city_name;
+                            citiesDropdown.appendChild(option);
+                        });
+                    } else if (data.error) {
+                        console.error('Error:', data.error);
+                    }
                 })
                 .catch(error => console.error('Error:', error));
         }
     }
-
-    prefectureDropdown.addEventListener('change', function () {
-        var selectedPrefectureId = this.value;
-        updateCityChoices(selectedPrefectureId);
-    });
-
-    updateCityChoices(prefectureDropdown.value);
-});
-</script>{% endblock %}
+</script>
+{% endblock %}
