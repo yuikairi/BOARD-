@@ -1,24 +1,18 @@
-{% extends "base.html" %}  
+{% extends "base.html" %}
 
 {% block main %}
 <div class="container mt-4">
     <h2>新規投稿</h2>
-    <form method="post" enctype="multipart/form-data"> 
-        {% csrf_token %} 
-        {{ form.as_p }}  
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
         <button type="submit" class="btn btn-primary">投稿する</button>
     </form>
 </div>
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        var prefectureDropdown = document.getElementById('id_prefecture');
-        var cityDropdown = document.getElementById('id_city');
-
-        prefectureDropdown.addEventListener('change', function () {
-            var selectedPrefectureId = this.value;
-            updateCityChoices(selectedPrefectureId);
-        });
-    });
+document.addEventListener('DOMContentLoaded', function () {
+    var prefectureDropdown = document.getElementById('id_prefecture');
+    var cityDropdown = document.getElementById('id_city');
 
     function updateCityChoices(prefectureId) {
         var citiesDropdown = document.getElementById('id_city');
@@ -39,5 +33,12 @@
                 .catch(error => console.error('Error:', error));
         }
     }
-</script>
-{% endblock %}
+
+    prefectureDropdown.addEventListener('change', function () {
+        var selectedPrefectureId = this.value;
+        updateCityChoices(selectedPrefectureId);
+    });
+
+    updateCityChoices(prefectureDropdown.value);
+});
+</script>{% endblock %}

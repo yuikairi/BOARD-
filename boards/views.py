@@ -3,7 +3,7 @@ from .models import Post, Thread, School,City,Deviation_Value,Prefecture
 from .forms import SearchForm, ThreadForm, PostForm
 from django.views.generic import  TemplateView, CreateView,DeleteView,ListView
 from functools import reduce
-from operator import and_ 
+from operator import and_
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.conf import settings
@@ -23,21 +23,21 @@ from django.core.exceptions import ObjectDoesNotExist
 
 
 def post_list(request,post_id=None):
-    posts = Post.objects.all().order_by('-created_at') 
+    posts = Post.objects.all().order_by('-created_at')
     paginator = Paginator(posts, settings.POSTS_PER_PAGE)
     custom_user = request.user
     page = request.GET.get('page')
     posts = paginator.get_page(page)
-    
+
     return render(request, 'boards/post_list.html', {'posts': posts})
 
 @login_required
 def post_detail(request, post_id):
     posts = Post.objects.all()
     post = get_object_or_404(Post, id=post_id)
-    custom_user = request.user 
+    custom_user = request.user
     threads = Thread.objects.filter(post=post)
-    new_thread = None  
+    new_thread = None
     if request.method == 'POST':
         form = ThreadForm(request.POST)
         if form.is_valid():
@@ -69,10 +69,10 @@ def search_school(request):
             schools = schools.filter(deviation_values__value=deviation_value)
         if city:
             schools = schools.filter(city__city_name=city)
-    
+
         # カスタムフィルタリング関数（下記で定義）を適用
         schools = filter_school_queryset(schools)
-        
+
         # テンプレートに渡すコンテキストを作成
         context = {'schools': schools, 'form': form}
         return render(request, 'boards/school_list.html', context)
@@ -88,12 +88,12 @@ def search_school(request):
 def school_list(request):
     schools = School.objects.all()
     prefecture = request.GET.get('prefecture')
-    deviation_value = request.GET.get('deviation_value')  
+    deviation_value = request.GET.get('deviation_value')
     city = request.GET.get('city')
     min_deviation = request.GET.get('min_deviation')
     max_deviation = request.GET.get('max_deviation')
     form = SchoolFilterForm(request.GET or None)
-    
+
     if deviation_value is not None:
         try:
          deviation_value = int(deviation_value)
@@ -101,9 +101,9 @@ def school_list(request):
         except ValueError as e:
             print(f"ValueError: {e}")
     else:
-        deviation_value = 0    
-    min_value = None  
-    max_value = None  
+        deviation_value = 0
+    min_value = None
+    max_value = None
     try:
         min_value = int(min_deviation) if min_deviation and min_deviation.isdigit() else None
     except ValueError:
@@ -115,7 +115,7 @@ def school_list(request):
 
     if prefecture:
         schools = schools.filter(prefecture__prefecture_name=prefecture)
-    
+
     if min_value is not None:
         schools = schools.filter(deviation_values__value__gte=min_value)
     if max_value is not None:
@@ -132,9 +132,9 @@ def school_list(request):
     if city:
         schools = schools.filter(city__id=city)
 
-                    
+
     form = SearchForm(request.GET)
-    
+
     if form.is_valid():
         prefecture = form.cleaned_data['prefecture']
         min_deviation = form.cleaned_data['min_deviation']
@@ -142,8 +142,8 @@ def school_list(request):
         filtered_schools = School.objects.filter(prefecture__prefecture_name=prefecture)
          # 初期表示で愛知県が選択されているかどうかを確認
         initial_prefecture = '愛知'
-        initial_cities = City.objects.filter(prefecture__prefecture_name=initial_prefecture).values('id', 'city_name')    
-          
+        initial_cities = City.objects.filter(prefecture__prefecture_name=initial_prefecture).values('id', 'city_name')
+
         if min_deviation is not None:
             filtered_schools = filtered_schools.filter(deviation__gte=min_deviation)
         if max_deviation is not None:
@@ -170,8 +170,8 @@ class IndexView(ListView):
         # `ranking.html`と`pagination.html`に必要なコンテキストを追加
         context['is_paginated'] = True  # ページネーションが必要かどうか
         return context
-    
-        
+
+
 
 logger = logging.getLogger(__name__)
 @method_decorator(login_required, name='dispatch')
@@ -179,7 +179,7 @@ class CreatePostView(CreateView):
     model = Post
     form_class = PostForm
     template_name = "boards/post_create.html"
-    
+
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
         kwargs['school_id'] = self.kwargs['school_id']
@@ -188,14 +188,14 @@ class CreatePostView(CreateView):
         logger.debug(f'self.kwargs["city_id"]: {self.kwargs["city_id"]}')
 
         return kwargs
-    
+
     def get_success_url(self):
         school_id = self.kwargs.get('school_id')
         city_id = self.kwargs.get('city_id')
-         
+
         logger.debug(f'school_id in get_success_url: {school_id}')
         logger.debug(f'city_id in get_success_url: {city_id}')
-    
+
         return reverse_lazy('boards:post_done', args=[school_id, city_id])
 
     def form_valid(self, form):
@@ -206,7 +206,7 @@ class CreatePostView(CreateView):
         prefecture = form.cleaned_data['prefecture']
         deviation_value = form.cleaned_data['deviation_value']
         city = form.cleaned_data['city']
-        
+
         logger.debug(f'City: {city}')
         logger.debug('Form is valid.')
         logger.debug(f'Title: {title}')
@@ -223,10 +223,10 @@ class CreatePostView(CreateView):
             pass
 
         # city_idを取得（ログインユーザーに関連する情報）
-        
+
         city_id = city.id if city else None
         logger.debug(f'City ID: {city_id}')
-        
+
     # ユーザーIDを取得
         user_id = self.request.user.id if self.request.user.is_authenticated else None
         if not city:
@@ -249,10 +249,10 @@ class CreatePostView(CreateView):
         form.instance.user_id = user_id
 
         form.save()
-        
+
         return redirect(self.get_success_url())
 
-    
+
 class PostSuccessView(TemplateView):
     template_name ='boards/post_success.html'
 
@@ -262,7 +262,7 @@ def school_detail(request, school_id):
         school = get_object_or_404(School, pk=school_id)
         cities = school.city.all()
         city_info_list = [{"id": city.id, "name": city.city_name} for city in cities]
-        
+
         # 最初の都市を取得し、存在する場合に初期値を設定
         city = cities.first()
         initial = {}
@@ -270,7 +270,7 @@ def school_detail(request, school_id):
             initial['city'] = city
 
         form = PostForm(initial=initial)
-        
+
     except School.DoesNotExist:
         error_message = "School does not exist"
         return HttpResponse(error_message, status=404)
@@ -283,14 +283,14 @@ def school_detail(request, school_id):
         'posts': posts,
         'threads': threads,
         'form': form,
-        'city': city,  
+        'city': city,
     }
     return render(request, 'boards/school_detail.html', context)
 
 def ranking_view(request):
     # Scoreのvalueを基準にPostオブジェクトを降順に取得
     post_list = Post.objects.order_by('-score__value')
-    
+
     # 新しい投稿が追加された場合に備えてクエリセットを更新する
     paginator = Paginator(post_list, 9)  # 1ページに表示するオブジェクトの数を9に設定
     page_number = request.GET.get('page')  # クエリ文字列からページ番号を取得
@@ -305,13 +305,13 @@ def ranking_view(request):
     return render(request, 'boards/ranking.html', {'pages': pages})
 
 
-    
+
 class PostSuccessView(TemplateView):
     template_name ='boards/post_success.html'
 
 class DeleteSuccessView(TemplateView):
     template_name = 'boards/delete_success.html'
-    
+
 class PostDeleteView(DeleteView):
     model = Post
     template_name = 'post_delete.html'
@@ -325,8 +325,8 @@ class PostDeleteView(DeleteView):
         else:
             # ユーザーが投稿の作者でない場合、別のURLにリダイレクト
             return redirect('boards:post_list')
-        
-        
+
+
 #投稿編集
 def edit_post(request, post_id):
     post = get_object_or_404(Post, id=post_id)
@@ -350,14 +350,14 @@ def edit_post(request, post_id):
 def school_filter(request):
     form = SearchForm(request.GET or None)
     schools = []  # schools変数を初期化
-    
+
     # デバッグ用：クエリの内容を確認
     if form.is_valid():
         prefecture_name = form.cleaned_data.get('prefecture')
         city_name = form.cleaned_data.get('city')
         deviation_value = form.cleaned_data.get('deviation_value')
         print(f'Prefecture: {prefecture_name}, City: {city}, Deviation Value: {deviation_value}')
-        
+
         # 都道府県と市区町村に基づいてデータベースをクエリ
         if prefecture_name and city_name:
             schools = School.objects.filter(city__city_name=city_name, city__prefecture__prefecture_name=prefecture_name)
@@ -365,14 +365,14 @@ def school_filter(request):
             schools = School.objects.filter(city__prefecture__prefecture_name=prefecture_name)
         elif city_name:
             schools = School.objects.filter(city__city_name=city_name)
-        
+
         # 偏差値でフィルタリング
         if deviation_value:
             schools = schools.filter(deviation_values__value=deviation_value)
         print(schools.query)
         for school in schools:
             print(school)
-    
+
     context = {'schools': schools, 'form': form}
     return render(request, 'boards/school_list.html', context)
 
@@ -394,7 +394,7 @@ def new_post(request, school_id=None, city_id=None):
             # 市の可変性をチェック
             if post.school and post.city:
                 post.save()
-                
+
             # form.cleaned_data から値を取得
             school_id = form.cleaned_data.get('school')
             city_id = form.cleaned_data.get('city')
@@ -415,8 +415,8 @@ def new_post(request, school_id=None, city_id=None):
     return render(request, 'boards/new_post.html', {'form': form})
 
 
-    
-def get_cities(request):
+
+def fetch_cities_by_prefecture(request):
     prefecture_id = request.GET.get('prefecture_id')
     if prefecture_id:
         cities = City.objects.filter(prefecture_id=prefecture_id).values('id', 'city_name')
