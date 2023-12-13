@@ -21,5 +21,5 @@ urlpatterns = [
     path('get_cities/', views.get_cities, name='get_cities'),
     path('new_post/', views.new_post, name='new_post'),
     path('post/<int:school_id>/<int:city_id>/', views.CreatePostView.as_view(), name='post'),
-    path('get_cities/', views.get_cities, name='get_cities'),
-    ]
+    path('fetch_cities_by_prefecture/', views.fetch_cities_by_prefecture, name='fetch_cities_by_prefecture'),
+]

@@ -16,38 +16,41 @@
     </div>
 </div>
 <script>
-  document.addEventListener('DOMContentLoaded', function() {
-    var prefecturesDropdown = document.getElementById('id_prefecture');
-    var citiesDropdown = document.getElementById('id_city');
-    if (prefecturesDropdown && citiesDropdown) {
-      prefecturesDropdown.addEventListener('change', function() {
-        updateCityChoices(this.value);
-      });
-    }
-  });
+    document.addEventListener('DOMContentLoaded', function () {
+        var prefectureDropdown = document.getElementById('id_prefecture'); // 都道府県ドロップダウンのID
+        var cityDropdown = document.getElementById('id_city'); // 市ドロップダウンのID
 
-function updateCityChoices(prefectureId) {
-  // 市のドロップダウンをクリア
-  var citiesDropdown = document.getElementById('id_city');
-  citiesDropdown.innerHTML = '';
-
-  // 都道府県が選択されている場合のみリクエストを実行
-  if (prefectureId) {
-    // DjangoのURL設定に合わせてURLを修正
-    var url = `/boards/get_cities/?prefecture_id=${prefectureId}`;
-    fetch(url)
-      .then(response => response.json())
-      .then(data => {
-        // レスポンスに含まれる各市に対してオプションを作成し、ドロップダウンに追加
-        data.cities.forEach(city => {
-          var option = document.createElement('option');
-          option.value = city.id;
-          option.textContent = city.city_name; // city_name を使用
-          citiesDropdown.appendChild(option);
+        // 都道府県ドロップダウンの変更イベントを設定
+        prefectureDropdown.addEventListener('change', function () {
+            updateCityChoices(this.value);
         });
-      })
-      .catch(error => console.error('Error:', error));
-  }
-}
+
+        // ページ読み込み時に現在選択されている都道府県に基づいて市のリストを更新
+        updateCityChoices(prefectureDropdown.value);
+    });
+
+    function updateCityChoices(prefectureId) {
+        var citiesDropdown = document.getElementById('id_city');
+        citiesDropdown.innerHTML = ''; // 市のドロップダウンをクリア
+
+        if (prefectureId) {
+            var url = `/boards/fetch_cities_by_prefecture/?prefecture_id=${prefectureId}`;
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.cities) {
+                        data.cities.forEach(city => {
+                            var option = document.createElement('option');
+                            option.value = city.id;
+                            option.textContent = city.city_name;
+                            citiesDropdown.appendChild(option);
+                        });
+                    } else if (data.error) {
+                        console.error('Error:', data.error);
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        }
+    }
 </script>
 {% endblock %}
