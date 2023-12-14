@@ -91,40 +91,39 @@
 <br>
 <a href="{% url 'boards:search_school' %}">学校検索画面に戻る</a>
 <script>
-   // 都道府県が変更されたときに市の選択肢を読み込む
-document.getElementById('prefecture').addEventListener('change', function() {
-    loadCities(this.value);
-});
+    document.addEventListener('DOMContentLoaded', function() {
+        var urlParams = new URLSearchParams(window.location.search);
+        var initialPrefecture = urlParams.get('prefecture') || '愛知'; // URLから都道府県を取得
+        var initialCity = urlParams.get('city'); // URLから市を取得
 
-// ページ読み込み時に特定の都道府県の市をロードする
-window.onload = function() {
-    // 愛知県がデフォルトで選択されていると仮定
-    var initialPrefecture = '愛知';
-    document.getElementById('prefecture').value = initialPrefecture; // この行がデフォルトの選択を設定
-    loadCities(initialPrefecture);
-};
+        var prefectureSelect = document.getElementById('prefecture');
+        var cityDropdown = document.getElementById('city');
 
-// 都道府県に基づいて市の選択肢を読み込む関数
-function loadCities(prefectureName) {
-    var cityDropdown = document.getElementById('city');
-    // 選択された都道府県に関連する市のリストを取得
-    fetch(`/boards/get_cities/?prefecture_name=${prefectureName}`)
-        .then(response => response.json())
-        .then(data => {
-            // 市の選択肢をクリア
-            cityDropdown.innerHTML = '<option value="">選択してください</option>';
-            // 選択された都道府県に関連する市を追加
-            data.cities.forEach(function(city) {
-                var option = document.createElement('option');
-                option.value = city.id;
-                option.text = city.city_name;
-                cityDropdown.appendChild(option);
-            });
-        })
-        .catch(error => {
-            console.error('Error:', error);
+        prefectureSelect.value = initialPrefecture; // 都道府県セレクトボックスを設定
+        loadCities(initialPrefecture, initialCity); // 都道府県に基づいて市をロード
+
+        prefectureSelect.addEventListener('change', function() {
+            loadCities(this.value);
         });
-}
+
+        function loadCities(prefectureName, selectedCity) {
+            fetch(`/boards/get_cities/?prefecture_name=${prefectureName}`)
+                .then(response => response.json())
+                .then(data => {
+                    cityDropdown.innerHTML = '<option value="">選択してください</option>';
+                    data.cities.forEach(function(city) {
+                        var option = document.createElement('option');
+                        option.value = city.id;
+                        option.textContent = city.city_name;
+                        if (String(city.id) === selectedCity) { // 市のIDを文字列に変換して比較
+                            option.selected = true;
+                        }
+                        cityDropdown.appendChild(option);
+                    });
+                })
+                .catch(error => console.error('Error:', error));
+        }
+    });
 </script>
 {% endblock %}
 
