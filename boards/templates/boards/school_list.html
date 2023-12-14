@@ -92,19 +92,26 @@
 <a href="{% url 'boards:search_school' %}">学校検索画面に戻る</a>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        var urlParams = new URLSearchParams(window.location.search);
-        var initialPrefecture = urlParams.get('prefecture') || '愛知'; // URLから都道府県を取得
-        var initialCity = urlParams.get('city'); // URLから市を取得
+    var urlParams = new URLSearchParams(window.location.search);
+    var initialPrefecture = urlParams.get('prefecture') || '愛知'; // URLから都道府県を取得
+    var initialCity = urlParams.get('city'); // URLから市を取得
+    var initialDeviationValue = urlParams.get('deviation_value'); // URLから偏差値を取得
 
-        var prefectureSelect = document.getElementById('prefecture');
-        var cityDropdown = document.getElementById('city');
+    var prefectureSelect = document.getElementById('prefecture');
+    var cityDropdown = document.getElementById('city');
+    var deviationValueSelect = document.getElementById('deviation_value');
 
-        prefectureSelect.value = initialPrefecture; // 都道府県セレクトボックスを設定
-        loadCities(initialPrefecture, initialCity); // 都道府県に基づいて市をロード
+    // 都道府県、市、偏差値セレクトボックスを設定
+    prefectureSelect.value = initialPrefecture;
+    if (initialDeviationValue) {
+        deviationValueSelect.value = initialDeviationValue;
+    }
 
-        prefectureSelect.addEventListener('change', function() {
-            loadCities(this.value);
-        });
+    loadCities(initialPrefecture, initialCity); // 都道府県に基づいて市をロード
+
+    prefectureSelect.addEventListener('change', function() {
+        loadCities(this.value);
+    });
 
         function loadCities(prefectureName, selectedCity) {
             fetch(`/boards/get_cities/?prefecture_name=${prefectureName}`)
